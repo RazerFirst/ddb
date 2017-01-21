@@ -11,26 +11,14 @@ end.run_action(:install)
 puts '=============================================++++++++++==============='
 
 
-ddb_tables 'init' do
-  tables ['Settings', 'Nodes', 'Environments', 'Services']
-  action :init
-#  not_if { "`/opt/chef/embedded/bin/gem list | grep aws-sdk1 || echo $?`" == '1' }
+node['ddb']['tables'].each do |table, att_name|
+  if Helper::MetadataHandler.is_table_created?(table)
+    Helper::MetadataHandler.logger('Table ' + table + ' already exist.')
+  else
+    Helper::MetadataHandler.logger('Table ' + table + ' does not exist.')
+    Helper::MetadataHandler.logger('Creating table ' + table + ' ...')
+    Helper::MetadataHandler.create_table(table, att_name)
+    Helper::MetadataHandler.logger('Table ' + table + ' has been created.')
+  end
 end
 
-# Copyright:: 2017, The Authors, All Rights Reserved.
-# module Helper
-#    class MetadataHandler
-#      class << self
-#        def load_dependencies
-#         require 'aws-sdk'
-#         require 'aws-sdk-core'
-#         require 'json'
-#        end
-
-#        def my_chef_gem bar
-#            MetadataHandler.load_dependencies
-#            MyGem::do_the_thing_with_the_bar bar
-#        end
-#      end
-#    end
-# end

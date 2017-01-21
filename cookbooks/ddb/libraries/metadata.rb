@@ -9,9 +9,9 @@ module Helper
 
     def self.is_table_created?(table_name)
       load_dependencies
-
-      client = Aws::DynamoDB::Client.new(endpoint: 'http://172.17.0.2:8000', region: "us-east-1", access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
     
+      client = Aws::DynamoDB::Client.new(endpoint: 'http://172.17.0.2:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
+
       begin
         resp = client.describe_table({
           table_name: table_name, 
@@ -31,20 +31,30 @@ module Helper
       
     end
 
-    def self.create_table_settings
+    def self.create_table(table_name, att_name)
+      client = Aws::DynamoDB::Client.new(endpoint: 'http://172.17.0.2:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
 
-    end
+      resp = client.create_table({
+      attribute_definitions: [
+        {
+            attribute_name: att_name,
+            attribute_type: "S",
+        },
 
-    def self.create_table_environments
+      ],
+        key_schema: [
+          {
+            attribute_name: att_name,
+            key_type: "HASH",
+          },
 
-    end
- 
-    def self.create_table_nodes
-
-    end
-
-    def self.create_table_services
-
+        ],
+        provisioned_throughput: {
+          read_capacity_units: 5,
+          write_capacity_units: 5,
+        },
+        table_name: table_name,
+      })
     end
 
     def self.init_settings
