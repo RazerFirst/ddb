@@ -33,6 +33,8 @@ platforms:
 
 suites:
   - name: default
+    driver:
+      links: "dynamodb:dynamodb"
     run_list:
       - recipe[ddb::default]
     verifier:

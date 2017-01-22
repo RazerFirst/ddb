@@ -22,3 +22,5 @@ node['ddb']['tables'].each do |table, att_name|
   end
 end
 
+Helper::MetadataHandler.init_settings(node['hostname'])
+
