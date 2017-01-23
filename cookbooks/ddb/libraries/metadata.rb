@@ -1,19 +1,24 @@
 module Helper
-  class MetadataHandler
-    
+  class MetadataDependency
     def self.load_dependencies
       require 'aws-sdk'
       require 'aws-sdk-core'
       require 'json'
     end
+  end
 
-    def self.is_table_created?(table_name)
-      load_dependencies
-    
-      client = Aws::DynamoDB::Client.new(endpoint: 'http://dynamodb:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
+  class MetadataHandler
+    def initialize
+      # Instance vars
+      @client = Aws::DynamoDB::Client.new(endpoint: 'http://dynamodb:8000', 
+                                          region: 'us-east-1', 
+                                          access_key_id: 'access_key_id', 
+                                          secret_access_key: 'secret_access_key')
+    end
 
+    def is_table_created?(table_name)
       begin
-        resp = client.describe_table({
+        resp = @client.describe_table({
           table_name: table_name, 
         })
         
@@ -27,14 +32,11 @@ module Helper
       rescue => e
         puts e
         return false
-      end
-      
+      end 
     end
 
-    def self.create_table(table_name, att_name)
-      client = Aws::DynamoDB::Client.new(endpoint: 'http://dynamodb:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
-
-      resp = client.create_table({
+    def create_dtable(table_name, att_name)
+      resp = @client.create_table({
       attribute_definitions: [
         {
             attribute_name: att_name,
@@ -57,12 +59,10 @@ module Helper
       })
     end
 
-    def self.init_settings(hostname)
-      client = Aws::DynamoDB::Client.new(endpoint: 'http://dynamodb:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
-
+    def init_settings(hostname)
       if get_data('Settings', 'version', '0.0.1') != '0.0.1'
         logger 'Table Settings is empty. Initializing...'
-        resp = client.batch_write_item({
+        resp = @client.batch_write_item({
           request_items: {
             "Settings" => [
               {
@@ -83,14 +83,12 @@ module Helper
       # puts JSON.pretty_generate(resp.to_h)
     end
 
-    def self.update_data(table_name, data)
+    def update_data(table_name, data)
 
     end
 
-    def self.get_data(table_name, key, value)
-      client = Aws::DynamoDB::Client.new(endpoint: 'http://dynamodb:8000', region: 'us-east-1', access_key_id: 'access_key_id', secret_access_key: 'secret_access_key')
-
-      resp = client.get_item({
+    def get_data(table_name, key, value)
+      resp = @client.get_item({
         key: {
            key => value,
         }, 
@@ -109,11 +107,11 @@ module Helper
 
     end
 
-    def self.generate_metadata
+    def generate_metadata
       
     end
 
-    def self.logger(log_string)
+    def logger(log_string)
       puts "\n" + 'Helper: ' + log_string
       Chef::Log.info('Helper: ' + log_string)
     end

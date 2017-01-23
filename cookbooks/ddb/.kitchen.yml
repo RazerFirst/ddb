@@ -2,13 +2,15 @@
 driver:
   name: docker
   use_sudo: false
-  binary: docker.exe # <--because you are on windows
-  socket: "tcp://127.0.0.1:2375"
+#  binary: docker.exe # <--because you are on windows
+#  socket: "tcp://127.0.0.1:2375" # windows
 
 driver_config:
 #  require_chef_omnibus: "12.7.2"
   dns:
     - "8.8.8.8"
+    - "10.6.0.6"
+    - "10.6.0.16"
 
 provisioner:
   name: chef_zero
@@ -19,9 +21,6 @@ provisioner:
 
 verifier:
   name: inspec
-
-platforms:
-  - name: 
 
 platforms:
   - name: centos
