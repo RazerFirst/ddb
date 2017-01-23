@@ -5,8 +5,7 @@
 
 chef_gem 'aws-sdk' do
   version '2.7'
-  action :nothing
-end.run_action(:install)
+end
 
 Helper::MetadataDependency.load_dependencies
 
